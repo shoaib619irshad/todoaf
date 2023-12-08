@@ -10,11 +10,12 @@ def create_app(test_config=None):
     )
     app.config["MONGO_URI"]=os.getenv("MONGO_URI")
     mongo = PyMongo(app)
+    app.app_context().push()
     app.extensions['mongo'] = mongo
     jwt = JWTManager(app)
-    from app.api import todo
-    app.register_blueprint(todo.todo_bp)
-    from app.api import auth
-    app.register_blueprint(auth.user_bp)
+    from .todo import todo_bp
+    from .auth import user_bp
+    app.register_blueprint(todo_bp)
+    app.register_blueprint(user_bp)
     
     return app
