@@ -3,7 +3,9 @@ from flask_bcrypt import generate_password_hash , check_password_hash
 from flask_jwt_extended import create_access_token
 import datetime , os
 from controllers.auth import *
+from flask import current_app as app
 
+jwt =app.extensions['jwt']
 user_bp = Blueprint('user',__name__)
 
 #POST Route for user signup
@@ -13,7 +15,7 @@ def signup():
         abort(500)
     email = request.json.get("email",None)
     password = request.json.get("password",None)
-    role = request.json.get("role",None)
+    role = request.json.get("role",str(Role.EMPLOYEE))
     is_role_validate = validate_role(role)
     if  not is_role_validate:
         return jsonify(message="Invalid Role"), 500
@@ -28,7 +30,11 @@ def signup():
         })
     return jsonify(message="User with this email already exists")
 
-#POST Route for user login
+
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+   return user
+
 @user_bp.route('/user/login',methods=["POST"])
 def login():
     if not request.json:
