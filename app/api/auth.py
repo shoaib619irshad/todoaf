@@ -13,11 +13,15 @@ def signup():
         abort(500)
     email = request.json.get("email",None)
     password = request.json.get("password",None)
+    role = request.json.get("role",None)
+    is_role_validate = validate_role(role)
+    if  not is_role_validate:
+        return jsonify(message="Invalid Role"), 500
     validate_email_pass(email,password)
     user = get_user_by_email(email)
     if not user:
         password = generate_password_hash(password).decode('utf8')
-        add_user(email,password)
+        add_user(email,password,role)
         return jsonify({
             "message":"User Signup Successfully",
             "status":True
