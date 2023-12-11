@@ -8,12 +8,13 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.getenv('SECRET_KEY')
     )
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+    jwt = JWTManager(app)
+    app.extensions['jwt'] = jwt
     app.config["MONGO_URI"]=os.getenv("MONGO_URI")
     mongo = PyMongo(app)
-    app.app_context().push()
     app.extensions['mongo'] = mongo
-    app.config["JWT_SECRET_KEY"] = os.getenv("SUPER_SECRET")
-    jwt = JWTManager(app)
+    app.app_context().push()
     from .todo import todo_bp
     from .auth import user_bp
     from .routes import role_bp 

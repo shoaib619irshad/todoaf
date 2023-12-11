@@ -1,10 +1,9 @@
 from flask import current_app as app , request , abort, Blueprint
-from flask_bcrypt import generate_password_hash
 from controllers.auth import *
 from utils.decorators import admin_required , admin_manager_required
 
 mongo = app.extensions['mongo']
-role_bp = Blueprint('role',__name__)
+role_bp = Blueprint('add_manager_employee',__name__)
 
 #POST Route to add manager
 @role_bp.route('/user/manager', methods=["POST"])
@@ -17,15 +16,14 @@ def add_manager():
     validate_email_pass(email,password)
     manager = get_user_by_email(email)
     if not manager:
-        password = generate_password_hash(password).decode('utf8')
-        mongo.db.user.insert_one({'email': email, 'password': password, "role":"manager"})
+        add_user(email,password,role=str(Role.MANAGER))
         return jsonify({
             "message":"Manager Added Successfully",
             "status":True
         })
     return jsonify(message="Manager with this email already exists")
 
-#POST Route to add manager
+#POST Route to add employee
 @role_bp.route('/user/employee', methods=["POST"])
 @admin_manager_required
 def add_employee():
@@ -36,8 +34,7 @@ def add_employee():
     validate_email_pass(email,password)
     employee = get_user_by_email(email)
     if not employee:
-        password = generate_password_hash(password).decode('utf8')
-        mongo.db.user.insert_one({'email': email, 'password': password, "role":"employee"})
+        add_user(email,password,role=str(Role.EMPLOYEE))
         return jsonify({
             "message":"Employee Added Successfully",
             "status":True
