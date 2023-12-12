@@ -16,7 +16,7 @@ def add_manager():
     validate_email_pass(email,password)
     manager = get_user_by_email(email)
     if not manager:
-        add_user(email,password,role=str(Role.MANAGER))
+        add_user(email,password,role=Role.MANAGER.value)
         return jsonify({
             "message":"Manager Added Successfully",
             "status":True
@@ -34,7 +34,7 @@ def add_employee():
     validate_email_pass(email,password)
     employee = get_user_by_email(email)
     if not employee:
-        add_user(email,password,role=str(Role.EMPLOYEE))
+        add_user(email,password,role=Role.EMPLOYEE.value)
         return jsonify({
             "message":"Employee Added Successfully",
             "status":True
