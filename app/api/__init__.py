@@ -2,6 +2,7 @@ from flask import Flask
 from flask_pymongo import PyMongo 
 import os
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -14,6 +15,14 @@ def create_app(test_config=None):
     app.config["MONGO_URI"]=os.getenv("MONGO_URI")
     mongo = PyMongo(app)
     app.extensions['mongo'] = mongo
+    app.config['MAIL_SERVER']='smtp.gmail.com'
+    app.config['MAIL_PORT'] = 465
+    app.config['MAIL_USERNAME'] =os.getenv("MAIL_USERNAME")
+    app.config['MAIL_PASSWORD'] =os.getenv("MAIL_PASSWORD")
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USE_SSL'] = True
+    mail = Mail(app)
+    app.extensions['mail'] = mail
     app.app_context().push()
     from .todo import todo_bp
     from .auth import user_bp
